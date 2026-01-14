@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Phase 4 DevOps CI/CD EC2 Infrastructure
+
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 KeyPair for SSH access
+
+Resources:
+  DevOpsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH, HTTP, Jenkins, Prometheus, Grafana
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+  DevOpsEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+
+      ImageId: ami-0fc5d935ebf8bc3bc  # Ubuntu 22.04 (us-east-1)
+      KeyName: !Ref KeyName
+      SecurityGroups:
+        - !Ref DevOpsSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Phase4-DevOps-EC2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          apt-get update -y
+          apt-get install -y docker.io git curl
+          systemctl start docker
+          systemctl enable docker
+
+Outputs:
+  EC2PublicIP:
+    Description: Public IP of the EC2 instance
+    Value: !GetAtt DevOpsEC2.PublicIp
