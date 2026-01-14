@@ -31,16 +31,9 @@ pipeline {
     }
 
     stage('Smoke Test') {
-      steps {
-        sh 'sleep 3'
-        sh 'curl -f http://localhost:3000/health'
-      }
-    }
-  }
-
-  post {
-    always {
-      sh 'docker system df || true'
-    }
+  steps {
+    sh 'sleep 3'
+    sh 'docker compose -f $COMPOSE_FILE ps'
+    sh 'docker compose -f $COMPOSE_FILE exec -T app node -e "fetch(\'http://localhost:3000/health\').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"'
   }
 }
