@@ -1,28 +1,11 @@
-version: "3.8"
-
 services:
   app:
     image: node:18
     container_name: phase4_app
-    command: sh -c "npm install -g serve && serve -s /opt/phase4/app"
+    working_dir: /opt/phase4/app
+    command: sh -c "npm install -g serve && serve -s /opt/phase4/app -l tcp://0.0.0.0:3000"
     volumes:
-      - /opt/phase4/app:/opt/phase4/app
+      - /opt/phase4/app:/opt/phase4/app:ro
     ports:
       - "80:3000"
-    restart: unless-stopped
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: phase4_prometheus
-    volumes:
-      - /opt/phase4/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: phase4_grafana
-    ports:
-      - "3000:3000"
     restart: unless-stopped
