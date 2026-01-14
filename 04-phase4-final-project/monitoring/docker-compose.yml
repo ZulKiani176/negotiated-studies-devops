@@ -1,17 +1,15 @@
-
 version: "3.8"
 
 services:
   app:
-  image: node:18
-  container_name: phase4_app
-  command: sh -c "npm install -g serve && serve -s /opt/phase4/app"
-  volumes:
-    - /opt/phase4/app:/opt/phase4/app
-  ports:
-    - "80:3000"
-  restart: unless-stopped
-
+    image: node:18
+    container_name: phase4_app
+    command: sh -c "npm install -g serve && serve -s /opt/phase4/app"
+    volumes:
+      - /opt/phase4/app:/opt/phase4/app
+    ports:
+      - "80:3000"
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
@@ -28,4 +26,3 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
-
