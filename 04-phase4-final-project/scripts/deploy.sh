@@ -10,7 +10,7 @@ sudo rsync -a --delete "$SRC/" "$ROOT/"
 cd "$ROOT/monitoring"
 
 echo "[1/2] Building and starting services..."
-sudo docker compose up -d --build
+sudo docker-compose up -d --build
 
 echo "[2/2] Running basic verification..."
 curl -sSf http://localhost/ || (echo "App not responding" && exit 1)
