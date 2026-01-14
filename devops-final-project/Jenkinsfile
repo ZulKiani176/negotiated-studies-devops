@@ -1,0 +1,46 @@
+pipeline {
+  agent any
+
+  environment {
+    COMPOSE_PROJECT_NAME = "devopsmini"
+  }
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+    disableConcurrentBuilds()
+    timestamps()
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'docker compose build --no-cache app'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sh 'docker compose up -d --remove-orphans app'
+      }
+    }
+
+    stage('Smoke Test') {
+      steps {
+        sh 'sleep 3'
+        sh 'curl -f http://localhost:3000/health'
+      }
+    }
+  }
+
+  post {
+    always {
+      sh 'docker system df || true'
+    }
+  }
+}
