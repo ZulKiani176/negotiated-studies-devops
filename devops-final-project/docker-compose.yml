@@ -34,7 +34,13 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx768m -Djenkins.install.runSetupWizard=true
     restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 8192
 
 volumes:
   jenkins_home:
